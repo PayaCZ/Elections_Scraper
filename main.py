@@ -1,3 +1,15 @@
+"""
+projekt_3.py: třetí projekt do Engeto Online Python Akademie
+author: Pavel Šmíd
+email: 78.78@seznam.cz
+discord: Pavel Šmíd#2969
+
+"""
+
+#Elections scraper#
+###################
+
+
 import os
 import csv
 import requests
