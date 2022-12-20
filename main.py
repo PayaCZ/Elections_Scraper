@@ -1,21 +1,9 @@
-"""
-projekt_3.py: třetí projekt do Engeto Online Python Akademie
-author: Pavel Šmíd
-email: 78.78@seznam.cz
-discord: Pavel Šmíd#2969
-
-"""
-
-# ELECTIONS_SCRAPER #
-#####################
-
 import os
 import csv
-import sys
 import requests
 import bs4
+import argparse
 
-# proměnné mesta a ahref jsou globální
 
 mesta = []
 href = []
@@ -33,6 +21,7 @@ def odkaz(odkaz_1, odkaz_2, znak_1):
 def mesta_hledej():
 
     odezva = requests.get("https://volby.cz/pls/ps2017nss/ps3?xjazyk=CZ")
+    print(odezva)
     if odezva.status_code == 200:
         skok = -1
         soup = bs4.BeautifulSoup(odezva.text, "html.parser")
@@ -74,6 +63,7 @@ def obec_hledej(i):
         if skok == 1:
             obec_jmeno = str(item.get_text())
             obec_dict[obec_jmeno] = [obec_cislo, obec_odkaz]
+
     return obec_dict
 
 
@@ -86,7 +76,7 @@ def zapis_csv(obec_dict, fname):
         "Vydané obálky",
         "Platné hlasy",
     ]
-    vystup_csv = list()
+    vystup_csv = []
 
     soubor_csv = open(fname, "w", encoding="UTF8", newline="")
     zapisovac_csv = csv.writer(soubor_csv)
@@ -104,7 +94,7 @@ def zapis_csv(obec_dict, fname):
 
     def tabulka_csv_2_3(tab: bs4.element.ResultSet):
 
-        strany = list()
+        strany = []
         hlavicka = ["Poradi", "Nazev", "Hlasy", "Hlasy %", "Link"]
         for k in range(1, 3):
             strany.extend(
@@ -116,6 +106,7 @@ def zapis_csv(obec_dict, fname):
                     for row in tab[k].find_all("tr")
                 ][2:]
             )
+
         return strany
 
     for i, obec in enumerate(obec_dict):
@@ -143,26 +134,39 @@ def zapis_csv(obec_dict, fname):
         print(pracuji[i % 4], end="\r")
     soubor_csv.close()
     print(" ", end="\r")
+    print("Požadavek zpracován.")
 
 
-def main():
+def main(mesto, soubor):
 
     mesta_hledej()
-    if len(sys.argv) == 3:
-        try:
-            inx = mesta.index(sys.argv[1])
-        except ValueError:
-            print("Špatně zadaný uzemní celek " + '"' + sys.argv[1] + '"!')
-            return
-        if sys.argv[2] in os.listdir():
-            print('Tento soubor_csv "' + sys.argv[2] + '" již existuje!')
-            return
-    else:
-        print("Zadej dva argumenty!")
+
+    try:
+        inx = mesta.index(mesto)
+    except ValueError:
+        print("Špatně zadaný uzemní celek " + '"' + mesto + '"!')
         return
+    if soubor in os.listdir():
+        print('Tento soubor "' + soubor + '" již existuje!')
+        return
+
     obec = obec_hledej(inx)
-    zapis_csv(obec, sys.argv[2])
+    zapis_csv(obec, soubor)
 
 
 if __name__ == "__main__":
-    main()
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--mesto",
+        help="Zadej název územního celku (mesto), první písmeno velké a s diakritikou např.: 'Benešov'.",
+    )
+    parser.add_argument(
+        "--soubor",
+        help="Zadej název nového souboru s příponou .csv, kam se uloží detailní výsledky voleb např.: 'vysledky_voleb2017_benesov.csv'.",
+    )
+
+    args = parser.parse_args()
+
+    main(args.mesto, args.soubor)
