@@ -1,5 +1,5 @@
 """
-projekt_3.py: třetí projekt do Engeto Online Python Akademie
+main.py: třetí projekt do Engeto Online Python Akademie
 author: Pavel Šmíd
 email: 78.78@seznam.cz
 discord: Pavel Šmíd#2969
