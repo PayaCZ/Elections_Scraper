@@ -3,12 +3,10 @@ main.py: třetí projekt do Engeto Online Python Akademie
 author: Pavel Šmíd
 email: 78.78@seznam.cz
 discord: Pavel Šmíd#2969
-
 """
 
-#Elections scraper#
+# Elections scraper
 ###################
-
 
 import os
 import csv
@@ -16,11 +14,11 @@ import requests
 import bs4
 import argparse
 
-
+# Inicializace seznamů pro města a odkazy
 mesta = []
 href = []
 
-
+# Funkce pro získání odkazu na stránku obce
 def odkaz(odkaz_1, odkaz_2, znak_1):
 
     # return vrací odkaz na stránku obce
@@ -29,7 +27,7 @@ def odkaz(odkaz_1, odkaz_2, znak_1):
     odkaz_2 = odkaz_1 + odkaz_2.replace("amp;", "")
     return odkaz_2
 
-
+# Funkce pro hledání měst
 def mesta_hledej():
 
     odezva = requests.get("https://volby.cz/pls/ps2017nss/ps3?xjazyk=CZ")
@@ -51,12 +49,12 @@ def mesta_hledej():
                     )
                 )
 
-
+# Funkce pro hledání obcí a vytvoření slovníku
 def obec_hledej(i):
 
     # dle sys.argv[1] vyhledá všechny obce a linky na detailní výsledky voleb
     # proměnná skok zajišťuje přeskakování řádků dle obsahu proměnné soup
-    # return vrací dict klíč je název obce a hodnnota je list 2 hodnoty, číslo # obce a link na výsledky voleb
+    # return vrací dict klíč je název obce a hodnota je list 2 hodnoty, číslo # obce a link na výsledky voleb
 
     obec_dict = {}
     obec_cislo = ""
@@ -78,7 +76,7 @@ def obec_hledej(i):
 
     return obec_dict
 
-
+# Funkce pro zápis do CSV souboru
 def zapis_csv(obec_dict, fname):
 
     hlavicka_csv = [
@@ -148,7 +146,7 @@ def zapis_csv(obec_dict, fname):
     print(" ", end="\r")
     print("Požadavek zpracován.")
 
-
+# Hlavní funkce pro spuštění programu
 def main(mesto, soubor):
 
     mesta_hledej()
@@ -164,7 +162,6 @@ def main(mesto, soubor):
 
     obec = obec_hledej(inx)
     zapis_csv(obec, soubor)
-
 
 if __name__ == "__main__":
 
